@@ -1,8 +1,9 @@
+// components/Chatbot.js
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { Send, Bot, User, MessageCircle } from "lucide-react";
-import responses from "./chatbotResponses";
+import responses from "./chatbotResponses"; // keep your existing chatbotResponses file
 
 export default function Chatbot() {
   const [messages, setMessages] = useState([
@@ -23,11 +24,11 @@ export default function Chatbot() {
   const servicesOptions = [
     { label: "1) Landing Page / Portfolio Site", value: "1" },
     { label: "2) Business Website (multi-page)", value: "2" },
-    { label: "3) E-commerce / Marketplace", value: "2" }, // maps to '2' response
-    { label: "4) Vendor Booking / Booking Platform", value: "3" },
-    { label: "5) Dashboards & Admin Panels", value: "4" },
-    { label: "6) API Integrations (Paystack, WhatsApp, SMS, custom)", value: "7" },
-    { label: "7) Custom Django Apps & Features", value: "11" },
+    { label: "3) E-commerce / Marketplace", value: "3" },
+    { label: "4) Vendor Booking / Booking Platform", value: "4" },
+    { label: "5) Dashboards & Admin Panels", value: "5" },
+    { label: "6) API Integrations (Paystack, WhatsApp, SMS, custom)", value: "6" },
+    { label: "7) Custom Django Apps & Features", value: "7" },
   ];
 
   const getLastUserMessage = () => {
@@ -37,7 +38,6 @@ export default function Chatbot() {
     return "";
   };
 
-  // THEME: Only follow explicit site theme toggles by checking <html>.classList ('.dark')
   useEffect(() => {
     const doc = typeof document !== "undefined" ? document.documentElement : null;
     if (!doc) return;
@@ -52,7 +52,6 @@ export default function Chatbot() {
     return () => observer.disconnect();
   }, []);
 
-  // Lookup in responses: returns string or object
   function getBotResponse(userMessage) {
     const msg = userMessage.toLowerCase();
     for (const key in responses) {
@@ -110,7 +109,6 @@ export default function Chatbot() {
     openWhatsApp(prefill);
   };
 
-  // Decide CTAs per bot message content
   const getCTAsForBotMessage = (msg) => {
     if (!msg || typeof msg.text !== "string") return [];
     const text = msg.text.toLowerCase();
@@ -186,8 +184,8 @@ export default function Chatbot() {
   const userBubbleBg = isDark ? "bg-blue-600 text-white" : "bg-brand text-white";
 
   return (
-    <div className="fixed bottom-6 right-6 flex flex-col items-end z-50">
-      {/* Floating bubble */}
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 max-w-full flex flex-col items-end">
+      {/* Floating bubble (closed) */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -200,10 +198,9 @@ export default function Chatbot() {
 
       {/* Chat panel */}
       {isOpen && (
-        <div className={`flex flex-col w-80 rounded-2xl shadow-2xl overflow-hidden transition-all border ${panelBg}`}>
-          {/* ---------- Styled header with curve (NEW) ---------- */}
-          <div className="relative">
-            {/* header content */}
+        <div className={`flex flex-col rounded-2xl shadow-2xl overflow-hidden transition-all border ${panelBg}`} style={{ width: "auto" }}>
+          <div className="w-[92vw] sm:w-80 max-w-sm">
+            {/* Header */}
             <div
               className={`rounded-t-2xl px-4 pt-4 pb-6 flex items-start justify-between gap-2 ${
                 isDark ? "bg-gradient-to-r from-indigo-700 to-brand text-white" : "bg-gradient-to-r from-brand to-indigo-500 text-white"
@@ -242,105 +239,102 @@ export default function Chatbot() {
               </div>
             </div>
 
-            {/* SVG curve that overlaps the header bottom to create the curved top effect */}
+            {/* SVG curve */}
             <div className="-mt-1">
               <svg viewBox="0 0 400 40" preserveAspectRatio="none" className="w-full h-5 block">
-                <path
-                  d="M0 40 C 100 0 300 0 400 40 L400 40 L0 40 Z"
-                  fill={isDark ? "#0f172a" : "#ffffff"}
-                />
+                <path d="M0 40 C 100 0 300 0 400 40 L400 40 L0 40 Z" fill={isDark ? "#0f172a" : "#ffffff"} />
               </svg>
             </div>
-          </div>
 
-          {/* Messages */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 text-sm max-h-96">
-            {messages.map((msg, i) => (
-              <div key={i} className={`flex items-start gap-2 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
-                {msg.sender === "bot" && (
-                  <div className={`${botBubbleBg} p-2 rounded-lg flex flex-col gap-2 max-w-[85%]`}>
-                    <div className="flex gap-2 items-start">
-                      <Bot className={`w-4 h-4 ${isDark ? "text-brand" : "text-brand"}`} />
-                      <div className="whitespace-pre-wrap text-sm">{msg.text}</div>
-                    </div>
-
-                    {/* show service buttons when assistant lists services (Chatbot.js logic checks for this substring) */}
-                    {typeof msg.text === "string" && msg.text.toLowerCase().includes("services (pick one") && (
-                      <div className="flex flex-col gap-2 mt-2">
-                        {servicesOptions.map((opt) => (
-                          <button
-                            key={opt.value + opt.label}
-                            onClick={() => handleSend(opt.value)}
-                            className={`text-left ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} border px-3 py-1 rounded-lg text-sm hover:shadow transition flex items-center justify-between`}
-                          >
-                            <span>{opt.label}</span>
-                          </button>
-                        ))}
+            {/* Messages area */}
+            <div role="log" aria-live="polite" className="flex-1 p-4 overflow-y-auto space-y-3 text-sm max-h-[60vh] sm:max-h-96">
+              {messages.map((msg, i) => (
+                <div key={i} className={`flex items-start gap-2 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+                  {msg.sender === "bot" && (
+                    <div className={`${botBubbleBg} p-2 rounded-lg flex flex-col gap-2 max-w-[85%]`}>
+                      <div className="flex gap-2 items-start">
+                        <Bot className={`w-4 h-4 ${isDark ? "text-brand" : "text-brand"}`} />
+                        <div className="whitespace-pre-wrap text-sm">{msg.text}</div>
                       </div>
-                    )}
 
-                    {/* CTAs */}
-                    {getCTAsForBotMessage(msg).length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {getCTAsForBotMessage(msg).map((cta) => (
-                          <button key={cta.key} onClick={cta.onClick} className="bg-brand text-white text-xs px-3 py-1 rounded-lg hover:bg-brand/90 transition">
-                            {cta.label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* suggestion chips */}
-                    {msg.suggestions && Array.isArray(msg.suggestions) && msg.suggestions.length > 0 && !isTyping && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {msg.suggestions.map((s, idx) => {
-                          const label = cleanSuggestionLabel(s.toString());
-                          return (
-                            <button key={idx} onClick={() => handleSend(label)} className="bg-brand text-white text-xs px-2 py-1 rounded-lg hover:bg-brand/90 transition">
-                              {label}
+                      {/* services buttons */}
+                      {typeof msg.text === "string" && msg.text.toLowerCase().includes("services (pick one") && (
+                        <div className="flex flex-col gap-2 mt-2">
+                          {servicesOptions.map((opt) => (
+                            <button
+                              key={opt.value + opt.label}
+                              onClick={() => handleSend(opt.value)}
+                              className={`text-left ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} border px-3 py-1 rounded-lg text-sm hover:shadow transition flex items-center justify-between`}
+                            >
+                              <span>{opt.label}</span>
                             </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
+                          ))}
+                        </div>
+                      )}
 
-                {msg.sender === "user" && (
-                  <div className={`${userBubbleBg} p-2 rounded-lg flex gap-2 max-w-[75%]`}>
-                    <span className="text-sm">{msg.text}</span>
-                    <User className="w-4 h-4 shrink-0" />
-                  </div>
-                )}
-              </div>
-            ))}
+                      {/* CTAs */}
+                      {getCTAsForBotMessage(msg).length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {getCTAsForBotMessage(msg).map((cta) => (
+                            <button key={cta.key} onClick={cta.onClick} className="bg-brand text-white text-xs px-3 py-1 rounded-lg hover:bg-brand/90 transition">
+                              {cta.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
 
-            {isTyping && (
-              <div className="flex items-start gap-2 justify-start">
-                <div className={`${botBubbleBg} p-2 rounded-lg flex gap-2 max-w-[50%] animate-pulse`}>
-                  <Bot className="w-4 h-4 text-brand shrink-0" />
-                  <span>Typing...</span>
+                      {/* suggestion chips */}
+                      {msg.suggestions && Array.isArray(msg.suggestions) && msg.suggestions.length > 0 && !isTyping && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {msg.suggestions.map((s, idx) => {
+                            const label = cleanSuggestionLabel(s.toString());
+                            return (
+                              <button key={idx} onClick={() => handleSend(label)} className="bg-brand text-white text-xs px-2 py-1 rounded-lg hover:bg-brand/90 transition">
+                                {label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {msg.sender === "user" && (
+                    <div className={`${userBubbleBg} p-2 rounded-lg flex gap-2 max-w-[75%]`}>
+                      <span className="text-sm">{msg.text}</span>
+                      <User className="w-4 h-4 shrink-0" />
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              ))}
 
-            <div ref={messagesEndRef} />
-          </div>
+              {isTyping && (
+                <div className="flex items-start gap-2 justify-start">
+                  <div className={`${botBubbleBg} p-2 rounded-lg flex gap-2 max-w-[50%] animate-pulse`}>
+                    <Bot className="w-4 h-4 text-brand shrink-0" />
+                    <span>Typing...</span>
+                  </div>
+                </div>
+              )}
 
-          {/* Input */}
-          <div className={`border-t p-2 flex items-center gap-2 ${isDark ? "border-gray-700" : "border-gray-200"}`}>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend(input)}
-              placeholder="Type your question..."
-              className={`flex-1 px-3 py-2 rounded-lg ${isDark ? "bg-gray-700 text-gray-100 border-gray-600" : "bg-white text-gray-900 border-gray-300"} focus:ring-2 focus:ring-brand outline-none text-sm`}
-              aria-label="Chat input"
-            />
-            <button onClick={() => handleSend(input)} aria-label="Send" className="bg-brand text-white p-2 rounded-lg hover:bg-brand/90 transition">
-              <Send className="w-4 h-4" />
-            </button>
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input */}
+            <div className={`border-t p-2 flex items-center gap-2 ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSend(input)}
+                placeholder="Type your question..."
+                className={`flex-1 px-3 py-2 rounded-lg ${isDark ? "bg-gray-700 text-gray-100 border-gray-600" : "bg-white text-gray-900 border-gray-300"} focus:ring-2 focus:ring-brand outline-none text-sm`}
+                aria-label="Chat input"
+              />
+              <button onClick={() => handleSend(input)} aria-label="Send" className="bg-brand text-white p-2 rounded-lg hover:bg-brand/90 transition">
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       )}
