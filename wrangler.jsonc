@@ -1,0 +1,7 @@
+{
+  "name": "gwr-portfolio",
+  "compatibility_date": "2025-09-07",
+  "assets": {
+    "directory": "./out"
+  }
+}

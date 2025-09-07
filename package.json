@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "deploy": "vercel --prod"
+    "start": "next start", 
+    "deploy": "npm run build && npx wrangler deploy"
   },
   "dependencies": {
     "framer-motion": "11.0.0",
